@@ -1,11 +1,14 @@
+import math
+
+
 class Solution:
-    def maxProfit(self, k: int, prices: list[int]) -> int:
+    def maxProfit(self, k, prices):
         days = len(prices)
 
-        if k <= 0 or days <= 1:
+        if days <= 1 or k < 1:
             return 0
 
-        if k > days / 2:
+        if k >= days // 2:
             profit = 0
 
             for i in range(1, days):
@@ -14,22 +17,18 @@ class Solution:
 
             return profit
 
-        dp = [0 * days] * (k + 1)
+        k = min(k, days // 2)
+        dp = []
+        for i in range(k + 1):
+            lst = []
+            for j in range(days):
+                lst.append(0)
+            dp.append(lst)
 
         for i in range(1, k + 1):
-            max_profit = dp[i - 1][0] - prices[0]
+            max_profit = -math.inf
             for j in range(1, days):
-                dp[i][j] = max(dp[i][j - 1], prices[j] + max_profit)
-                max_profit = max(max_profit, dp[i - 1][j] - prices[j])
+                max_profit = max(max_profit, dp[i - 1][j - 1] - prices[j - 1])
+                dp[i][j] = max(dp[i][j - 1], max_profit + prices[j])
 
         return dp[k][days - 1]
-
-
-def main():
-    prices = list(map(int, input().strip().split()))
-    k = int(input())
-    Solution().maxProfit(k, prices)
-
-
-if __name__ == '__main__':
-    main()
